@@ -1,45 +1,51 @@
 import pygame
 
+def clamp(value, minValue, maxValue):
+    return max(minValue, min(value, maxValue))
+
 class BaseEntity:
-    PositonX = 0
-    PositonY = 0
+    positonX = 0
+    positonY = 0
 
-    IsAnimated = False
+    isAnimated = False
 
-    def __init__(self, Screen: pygame.Surface, ImageName: str, ImagePath: str = "bilder\\", ImageFormat: str = ".png"):
-        self.Screen = Screen
-        self.Image = pygame.image.load(ImagePath + ImageName + ImageFormat)
+    def __init__(self, screen: pygame.Surface, imageName: str, imagePath: str = "bilder\\", imageFormat: str = ".png"):
+        self.screen = screen
+        self.image = pygame.image.load("0.1\\" + imagePath + imageName + imageFormat)
 
-    def show(self, IsAnimated: bool = 0, MaxFrames: int = 0, FrameSize: tuple[int, int] = (0, 0)):
-        if IsAnimated:
-            if self.IsAnimated == False:
-                self.IsAnimated = True
-                self.CurrentFrame = 0
+    def show(self, isAnimated: bool = 0, maxFrames: int = 0, frameSize: tuple[int, int] = (0, 0)):
+        self.size = frameSize
+        if isAnimated:
+            if self.isAnimated == False:
+                self.isAnimated = True
+                self.currentFrame = 0
             
-            FrameOffset = self.CurrentFrame * (FrameSize[0] + 1)
-            self.Screen.blit(self.Image ,(self.PositonX, self.PositonY), (FrameOffset, 0, FrameSize[0], FrameSize[1]))
+            frameOffset = self.currentFrame * (frameSize[0] + 1)
+            self.screen.blit(self.image ,(self.positonX, self.positonY), (frameOffset, 0, frameSize[0], frameSize[1]))
 
-            if self.CurrentFrame < MaxFrames:
-                self.CurrentFrame += 1
+            if self.currentFrame < maxFrames:
+                self.currentFrame += 1
             else: 
-                self.CurrentFrame = 0
-
+                self.currentFrame = 0
         else:
-            if self.IsAnimated == True:
-                self.IsAnimated = False
-            self.Screen.blit(self.Image ,(self.PositonX, self.PositonY))
+            if self.isAnimated == True:
+                self.isAnimated = False
+            self.screen.blit(self.image ,(self.positonX, self.positonY))
 
 
 
     def move(self, x = 0, y = 0):
-        self.PositonX += x
-        self.PositonY += y
+
+        self.positonX = clamp(self.positonX + x, 0, self.screen.get_size()[0] - self.size[0])
+        self.positonY = clamp(self.positonY + y, 0, self.screen.get_size()[1] - self.size[1])
 
     def moveTo(self, x = 0, y = 0):
-        self.PositonX = x
-        self.PositonY = y
+        self.positonX = x
+        self.positonY = y
+
 
 class BasePlayer(BaseEntity):
     health = 0
+
 
     
