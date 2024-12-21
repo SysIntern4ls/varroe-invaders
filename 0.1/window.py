@@ -24,3 +24,5 @@ class Window:
         pygame.display.flip()
         self.clock.tick(60)
         
+
+

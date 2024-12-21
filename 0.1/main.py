@@ -8,8 +8,8 @@ window = Window(1000, 1000)
 localPlayer = GameObject(window.screen, "biene-sprite-sheet")
 
 while True:
-    window.newFrame()
 
+    
 
     for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -27,18 +27,11 @@ while True:
     if keys[pygame.K_LEFT]:
         localPlayer.move(-10, 0)
 
-
-   
-                    
-                    
-
-              
-
+    window.newFrame()
+                       
     localPlayer.render(True, 5, (100, 100))
 
     window.endFrame()
 
 
-'''
-    
-'''
+
