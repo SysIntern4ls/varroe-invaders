@@ -1,11 +1,11 @@
 import pygame
 
 from window     import Window
-from baseEntity import BaseEntity, BasePlayer
+from gameObject import GameObject
 
 window = Window(1000, 1000)
 
-localPlayer = BasePlayer(window.screen, "biene-sprite-sheet")
+localPlayer = GameObject(window.screen, "biene-sprite-sheet")
 
 while True:
     window.newFrame()
@@ -34,7 +34,7 @@ while True:
 
               
 
-    localPlayer.show(True, 5, (100, 100))
+    localPlayer.render(True, 5, (100, 100))
 
     window.endFrame()
 
