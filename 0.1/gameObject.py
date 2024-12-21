@@ -7,7 +7,7 @@ class GameObject:
         ANIMATED = 1 << 0
 
     """
-    Object State System using Bitmask
+    Object state system using bitmasks
     """
     def hasState(self, state: int):
         return (self.currentState & state) != 0
@@ -77,12 +77,30 @@ class GameObject:
     
 
 
+    """
+    Moves GameObject
 
+    Parameters:
+    -----------
+    x: int
+        Moves GameObject on x-axis by x-Amount
+    y: int
+        Moves GameObject on y-axis by y-Amount
+    """
     def move(self, x = 0, y = 0):
-
         self.positionX = clamp(self.positionX + x, 0, self.screen.get_size()[0] - self.frameSize[0])
         self.positionY = clamp(self.positionY + y, 0, self.screen.get_size()[1] - self.frameSize[1])
 
+    """
+    Teleports GameObject to X and Y coordinates
+    
+    Parameters:
+    -----------
+    x: int
+        Teleports GameObject to x-coordinate
+    y: int
+        Teleports GameObject to y-coordinate
+    """
     def moveTo(self, x = 0, y = 0):
         self.positionX = x
         self.positionY = y
