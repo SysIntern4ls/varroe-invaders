@@ -22,9 +22,11 @@ class GameObject:
         self.currentState ^= state
     
 
-    def __init__(self, screen: pygame.Surface, imageName: str, imagePath: str = "bilder\\", imageFormat: str = ".png"):
+    def __init__(self, screen: pygame.Surface, imageName: str, frameSize: tuple[int, int] = (0, 0),  imagePath: str = "bilder\\", imageFormat: str = ".png"):
+        self.frameSize = frameSize
         self.screen = screen
         self.image = pygame.image.load("0.1\\" + imagePath + imageName + imageFormat)
+        print("0.1\\" + imagePath + imageName + imageFormat)
 
         #ObjectProperties
         self.currentState = 0
@@ -33,8 +35,6 @@ class GameObject:
 
 
     """
-    TODO: does currently not support changing from animated to not animated and vice versa
-
     Rendering of both static aswell as animated objects.
 
     Parameters:
@@ -46,8 +46,7 @@ class GameObject:
     frameSize: tuple[int, int]
         Size of a singular frame.
     """
-    def render(self, isAnimated: bool = False, maxFrames: int = 0, frameSize: tuple[int, int] = (0, 0)):
-        self.frameSize = frameSize
+    def render(self, isAnimated: bool = False, maxFrames: int = 0):
         # Drawing next frame of animated Object
         if isAnimated:
             # setting animated flag of object
@@ -56,12 +55,12 @@ class GameObject:
                 self.currentFrame = 0
 
             # calculating offset needed for current frame
-            frameOffset = self.currentFrame * (frameSize[0] + 1)
+            frameOffset = self.currentFrame * (self.frameSize[0] + 1)
 
             # drawing current frame
             self.screen.blit(self.image ,
                             (self.positionX, self.positionY), 
-                            (frameOffset, 0, frameSize[0], frameSize[1]))
+                            (frameOffset, 0, self.frameSize[0], self.frameSize[1]))
             
             # checking if we have to start over
             if self.currentFrame < maxFrames:
@@ -73,8 +72,6 @@ class GameObject:
         else:
             self.screen.blit(self.image, 
                             (self.positionX, self.positionY))
-    
-    
 
 
     """
@@ -90,6 +87,7 @@ class GameObject:
     def move(self, x = 0, y = 0):
         self.positionX = clamp(self.positionX + x, 0, self.screen.get_size()[0] - self.frameSize[0])
         self.positionY = clamp(self.positionY + y, 0, self.screen.get_size()[1] - self.frameSize[1])
+
 
     """
     Teleports GameObject to X and Y coordinates
