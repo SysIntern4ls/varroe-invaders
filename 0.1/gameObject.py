@@ -29,7 +29,7 @@ class GameObject:
         print("0.1\\" + imagePath + imageName + imageFormat)
 
         #ObjectProperties
-        self.currentState = 0
+        self.currentState = int(0)
         self.positionX = 0
         self.positionY = 0
 
@@ -98,10 +98,16 @@ class GameObject:
         Teleports GameObject to x-coordinate
     y: int
         Teleports GameObject to y-coordinate
+    clamp: bool
+        Wether x & y should be clamped
     """
-    def moveTo(self, x = 0, y = 0):
-        self.positionX = x
-        self.positionY = y
+    def moveTo(self, x = 0, y = 0, bool: clamp = True):
+        if clamp:
+            self.positionX = clamp(x, 0, self.screen.get_size()[0] - self.frameSize[0])
+            self.positionY = clamp(y, 0, self.screen.get_size()[1] - self.frameSize[1])
+        else:
+            self.positionX = x
+            self.positionY = y
 
 
 
