@@ -26,13 +26,18 @@ class GameObject:
         self.frameSize = frameSize
         self.screen = screen
         self.image = pygame.image.load("0.1\\" + imagePath + imageName + imageFormat)
-        print("0.1\\" + imagePath + imageName + imageFormat)
+        
 
         #ObjectProperties
         self.currentState = int(0)
-        self.positionX = 0
-        self.positionY = 0
+        self.positionX = int(0)
+        self.positionY = int(0)
+        self.velocityX = int(0)
+        self.velocityY = int(0)
 
+
+    def update(self):
+        self.move(self.velocityX, self.velocityY)
 
     """
     Rendering of both static aswell as animated objects.
@@ -58,8 +63,8 @@ class GameObject:
             frameOffset = self.currentFrame * (self.frameSize[0] + 1)
 
             # drawing current frame
-            self.screen.blit(self.image ,
-                            (self.positionX, self.positionY), 
+            self.screen.blit(self.image,
+                            (self.positionX, self.positionY),
                             (frameOffset, 0, self.frameSize[0], self.frameSize[1]))
             
             # checking if we have to start over
@@ -73,6 +78,14 @@ class GameObject:
             self.screen.blit(self.image, 
                             (self.positionX, self.positionY))
 
+    #TODO: Implement resizing of animated Objects      
+    def reSize(self, frameSize: tuple[int, int]):
+        if self.hasState(self.State.ANIMATED):
+            print("Can't resize animated Object")
+        else:
+            self.frameSize = frameSize
+            self.image = pygame.transform.smoothscale(self.image, frameSize)
+
 
     """
     Moves GameObject
@@ -83,10 +96,16 @@ class GameObject:
         Moves GameObject on x-axis by x-Amount
     y: int
         Moves GameObject on y-axis by y-Amount
+    clamp: bool
+        Wether x & y should be clamped
     """
-    def move(self, x = 0, y = 0):
-        self.positionX = clamp(self.positionX + x, 0, self.screen.get_size()[0] - self.frameSize[0])
-        self.positionY = clamp(self.positionY + y, 0, self.screen.get_size()[1] - self.frameSize[1])
+    def move(self, x = 0, y = 0, restrictToScreen: bool = True):
+        if restrictToScreen:
+            self.positionX = clamp(self.positionX + x, 0, self.screen.get_size()[0] - self.frameSize[0])
+            self.positionY = clamp(self.positionY + y, 0, self.screen.get_size()[1] - self.frameSize[1])
+        else:
+            self.positionX += x
+            self.positionY += y
 
 
     """
@@ -101,13 +120,22 @@ class GameObject:
     clamp: bool
         Wether x & y should be clamped
     """
-    def moveTo(self, x = 0, y = 0, bool: clamp = True):
-        if clamp:
+    def moveTo(self, x = 0, y = 0, restrictToScreen: bool = True):
+        if restrictToScreen:
             self.positionX = clamp(x, 0, self.screen.get_size()[0] - self.frameSize[0])
             self.positionY = clamp(y, 0, self.screen.get_size()[1] - self.frameSize[1])
         else:
             self.positionX = x
             self.positionY = y
+
+    def setVelocity(self, x = 0, y = 0):
+        self.velocityX = x
+        self.velocityY = y
+
+    def getVelocity(self):
+        return (self.velocityX, self.velocityY)
+
+    
 
 
 
