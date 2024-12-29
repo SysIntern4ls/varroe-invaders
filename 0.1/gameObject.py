@@ -4,7 +4,8 @@ from gameMath import clamp
 class GameObject:
 
     class State:
-        ANIMATED = 1 << 0
+        REMOVE_OBJECT = 1 << 0
+        ANIMATED = 1 << 1
 
     """
     Object state system using bitmasks
@@ -30,10 +31,8 @@ class GameObject:
 
         #ObjectProperties
         self.currentState = int(0)
-        self.positionX = int(0)
-        self.positionY = int(0)
-        self.velocityX = int(0)
-        self.velocityY = int(0)
+        self.setPosition(0,0)
+        self.setVelocity(0,0)
 
 
     def update(self):
@@ -79,7 +78,7 @@ class GameObject:
                             (self.positionX, self.positionY))
 
     #TODO: Implement resizing of animated Objects      
-    def reSize(self, frameSize: tuple[int, int]):
+    def resize(self, frameSize: tuple[int, int]):
         if self.hasState(self.State.ANIMATED):
             print("Can't resize animated Object")
         else:
@@ -120,7 +119,7 @@ class GameObject:
     clamp: bool
         Wether x & y should be clamped
     """
-    def moveTo(self, x = 0, y = 0, restrictToScreen: bool = True):
+    def setPosition(self, x = 0, y = 0, restrictToScreen: bool = True):
         if restrictToScreen:
             self.positionX = clamp(x, 0, self.screen.get_size()[0] - self.frameSize[0])
             self.positionY = clamp(y, 0, self.screen.get_size()[1] - self.frameSize[1])
@@ -131,9 +130,6 @@ class GameObject:
     def setVelocity(self, x = 0, y = 0):
         self.velocityX = x
         self.velocityY = y
-
-    def getVelocity(self):
-        return (self.velocityX, self.velocityY)
 
     
 

@@ -22,7 +22,6 @@ class Window:
 
     def endFrame(self):
         pygame.display.flip()
-        self.clock.tick(60)
         
 
 

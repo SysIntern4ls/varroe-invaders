@@ -3,6 +3,7 @@ import random
 
 from window     import Window
 from gameObject import GameObject
+from enemy      import Enemy
 
 
 class Game:
@@ -12,57 +13,68 @@ class Game:
 
         #TODO: Change image to un watermarked version
         self.prop = GameObject(self.window.screen, "bienenstock", (1200, 1094))
-        self.prop.moveTo(-330, -50, False)
-        self.prop.reSize((self.prop.frameSize[0] /1.4, self.prop.frameSize[1] /1.4))
+        #Setting position and size of prop
+        self.prop.setPosition(-330, -50, False)
+        self.prop.resize((self.prop.frameSize[0] /1.4, self.prop.frameSize[1] /1.4))
 
         #Things happening on gamestart
         self.player = GameObject(self.window.screen, "biene-sprite-sheet", (100, 100))
-        self.player.moveTo(90, 500)
+        self.player.setPosition(90, 500)
 
-        self.enemy = GameObject(self.window.screen, "varroa", (35, 50))
-        self.enemy.moveTo(random.randint(100, self.window.windowWidth)
-                        ,random.randint(0, self.window.windowHeight))
-        self.enemy.setVelocity(-5, 9)
-        
+        self.enemies = [Enemy(self.window.screen, "varroa", (35, 50))]
+        self.lastEnemySpawnTime = 0
+
         self.running = True
-        
-    def handleEvents(self):
-        # Checking if we want to quit the game
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                self.running = False
-                pygame.quit()
-                exit()
 
+        
+    def handleInputs(self):
+        #Checking for keypresses
         keys = pygame.key.get_pressed()
         if keys[pygame.K_DOWN]:
             self.player.move(0, 10)
         if keys[pygame.K_UP]:
             self.player.move(0, -10)
 
+        # Checking if we want to quit the game
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+                pygame.quit()
+                exit()
+            if (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                #TODO: Add pause menu
+                print("Escape")
+
     def update(self):
+        self.player.update()
 
-        #TODO:
-        #-Remove X for final version(only for fun)
-        #-Move Y to better Spot (maybe Collision manager)
-        if self.enemy.positionY == 0 or self.enemy.positionY >= self.window.windowHeight - self.enemy.frameSize[1]:
-            self.enemy.setVelocity(self.enemy.velocityX, -self.enemy.velocityY)
-        if self.enemy.positionX == 0 or self.enemy.positionX >= self.window.windowWidth - self.enemy.frameSize[0]:
-            self.enemy.setVelocity(-self.enemy.velocityX, self.enemy.velocityY)
+        # Update all enemies
+        for enemy in self.enemies:
+            enemy.update()
 
-        self.enemy.update()
+        # Not realy the most efficient way to do this but looks way nicer and is easier to understand
+        self.enemies = [enemy for enemy in self.enemies if not enemy.hasState(GameObject.State.REMOVE_OBJECT)]
+
+        #TODO: Rework enemy spawning
+        if len(self.enemies) < 5 and pygame.time.get_ticks() - self.lastEnemySpawnTime >= 500:
+            self.enemies.append(Enemy(self.window.screen, "varroa", (35, 50)))
+            self.lastEnemySpawnTime = pygame.time.get_ticks()
+        
 
     def render(self):
         self.window.newFrame()
 
         self.prop.render(False)               
         self.player.render(True, 5,)
-        self.enemy.render(False)
+
+        for enemy in self.enemies:
+            enemy.render(False)
 
         self.window.endFrame()
 
     def run(self):
         while self.running:
-            self.handleEvents()
+            self.handleInputs()
             self.update()
             self.render()
+            self.window.clock.tick(60)
