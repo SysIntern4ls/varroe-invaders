@@ -80,7 +80,7 @@ class GameObject:
     #TODO: Implement resizing of animated Objects      
     def resize(self, frameSize: tuple[int, int]):
         if self.hasState(self.State.ANIMATED):
-            print("Can't resize animated Object")
+            pass
         else:
             self.frameSize = frameSize
             self.image = pygame.transform.smoothscale(self.image, frameSize)

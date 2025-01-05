@@ -4,6 +4,8 @@ import random
 from window     import Window
 from gameObject import GameObject
 from enemy      import Enemy
+from player     import Player
+from gameMath   import getDistance
 
 
 class Game:
@@ -18,13 +20,14 @@ class Game:
         self.prop.resize((self.prop.frameSize[0] /1.4, self.prop.frameSize[1] /1.4))
 
         #Things happening on gamestart
-        self.player = GameObject(self.window.screen, "biene-sprite-sheet", (100, 100))
+        self.player = Player(self.window.screen, "biene-sprite-sheet", (100, 100))
         self.player.setPosition(90, 500)
 
         self.enemies = [Enemy(self.window.screen, "varroa", (35, 50))]
         self.lastEnemySpawnTime = 0
 
         self.running = True
+        self.window.playMusic("bienensummen")
 
         
     def handleInputs(self):
@@ -34,13 +37,15 @@ class Game:
             self.player.move(0, 10)
         if keys[pygame.K_UP]:
             self.player.move(0, -10)
+        if keys[pygame.K_SPACE]:
+            self.player.shoot()
 
         # Checking if we want to quit the game
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-                pygame.quit()
-                exit()
+                self.window.close()
+
             if (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 #TODO: Add pause menu
                 print("Escape")
@@ -59,6 +64,15 @@ class Game:
         if len(self.enemies) < 5 and pygame.time.get_ticks() - self.lastEnemySpawnTime >= 500:
             self.enemies.append(Enemy(self.window.screen, "varroa", (35, 50)))
             self.lastEnemySpawnTime = pygame.time.get_ticks()
+
+        for bullet in self.player.bullets:
+            for enemy in self.enemies:
+                if getDistance(bullet.positionX, bullet.positionY, enemy.positionX, enemy.positionY) < bullet.frameSize[0] + enemy.frameSize[0]:
+                    bullet.addState(GameObject.State.REMOVE_OBJECT)
+                    enemy.addState(GameObject.State.REMOVE_OBJECT)
+                    self.window.playSound("enemy-hit")
+
+        
         
 
     def render(self):

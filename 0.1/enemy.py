@@ -9,8 +9,7 @@ class Enemy(GameObject):
         super().__init__(screen, image, frameSize)
         
         self.setVelocity(-5, 9)
-        self.setPosition(self.screen.get_size()[0] + self.frameSize[0]
-                        ,random.randint(0, self.screen.get_size()[1]))
+        self.setPosition(self.screen.get_size()[0] + self.frameSize[0], random.randint(0, self.screen.get_size()[1]))
         
     def move(self, x = 0, y = 0, restrictToScreen: bool = True):
         x = clamp(self.positionX + x, -self.frameSize[0], self.screen.get_size()[0] - self.frameSize[0])
