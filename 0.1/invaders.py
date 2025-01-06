@@ -26,12 +26,6 @@ animbereich = 0
 spielerposY = 300
 spielerbewegung = 0 
 
-# Gegner
-# gegnerBild = pygame.image.load("bilder/varroa.png")
-# gegnerX = random.randint(W/2, W-50)
-# gegnerY = random.randint(50, H-50)
-# gegnerbewegung = 5
-
 gegnerBild = []
 gegnerX = []
 gegnerY = []
@@ -63,7 +57,7 @@ clock = pygame.time.Clock()
 font = pygame.font.Font(None, 36)
 
 # Musik/Soundeffekte einrichten
-pygame.mixer.music.load('sound/bienensummen.mp3')
+pygame.mixer.music.load('sounds/bienensummen.mp3')
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(.4)
 
@@ -73,11 +67,11 @@ def gegner(nr, x, y):
 def kugelfliegt(x, y):
     fenster.blit(kugelBild, (x, y))
 
-def kollisionskontrolle(kugelX, kugelY, gegnerX, gegnerY):
-    abstand = int( math.sqrt(math.pow(kugelX-gegnerX,2) + math.pow(kugelY-gegnerY,2)) )
+def kollisionskontrolle(kugelX, kugelY, gegnerX, gegnerY, size = 25):
+    abstand = int( math.sqrt(math.pow(kugelX- gegnerX,2) + math.pow(kugelY-gegnerY,2)) )
     # print("Abstand zwichen Kugel und Gegner: ", abstand)
 
-    if abstand < 25:
+    if abstand < size:
         return True
     else:
         return False
@@ -141,30 +135,34 @@ while spielaktiv:
     if kugelstatus == True:
         kugelX += kugelXbewegung
 
-        durchgang = 0
-        for x in gegnerBild:
-            if kollisionskontrolle(kugelX-30,kugelY-25,gegnerX[durchgang], gegnerY[durchgang]) == True:
+        i = 0
+        while i < len(gegnerBild):
+            if kollisionskontrolle(kugelX-30,kugelY-25,gegnerX[i], gegnerY[i]) == True:
                 # Kugel hat getroffen
                 # print("Kugel hat getroffen")
                 siegpunkte += 1
                 print("aktueller Stand der Siegpunkte: ", siegpunkte)
                 kugelstatus = False
 
-                #del gegnerNr[durchgang]
-                del gegnerBild[durchgang]
-                del gegnerX[durchgang]
-                del gegnerY[durchgang]
-                del gegnerbewegung[durchgang]
-
-            durchgang += 1
+                del gegnerBild[i]
+                del gegnerX[i]
+                del gegnerY[i]
+                del gegnerbewegung[i]
+            else:
+                i += 1
 
         if kugelX > W:
             kugelstatus = False
 
-     # Kontrolle auf gewonnen!#TODO: war mal gegnerNr versteh aber den sinn nicht
+     # Kontrolle auf gewonnen!
     if len(gegnerBild) == 0:
         print("Gewonnen!")
         spielaktiv = False
+
+    for x in range(len(gegnerBild)):
+        if kollisionskontrolle(200, spielerposY, gegnerX[x], gegnerY[x]) == True:
+                print("Verloren!")
+                spielaktiv = False
 
      # Spielfeld löschen
     fenster.fill(WEISS)
