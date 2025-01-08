@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from gameMath import clamp
+from gameMath   import clamp
 from gameObject import GameObject
 
 class Enemy(GameObject):

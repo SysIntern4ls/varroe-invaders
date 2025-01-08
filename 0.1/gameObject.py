@@ -1,4 +1,5 @@
 import pygame
+
 from gameMath import clamp
 
 class GameObject:

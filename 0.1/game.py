@@ -79,7 +79,7 @@ class Game:
         self.window.newFrame()
 
         self.prop.render(False)               
-        self.player.render(True, 5,)
+        self.player.render(True, 5)
 
         for enemy in self.enemies:
             enemy.render(False)
@@ -91,4 +91,4 @@ class Game:
             self.handleInputs()
             self.update()
             self.render()
-            self.window.clock.tick(60)
+            self.window.clock.tick(30)
