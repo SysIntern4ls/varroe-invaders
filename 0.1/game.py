@@ -13,12 +13,6 @@ class Game:
         #Initialising pygame
         self.window = Window(1280, 720)
 
-        #TODO: Change image to un watermarked version
-        self.prop = GameObject(self.window.screen, "bienenstock", (1200, 1094))
-        #Setting position and size of prop
-        self.prop.setPosition(-330, -50, False)
-        self.prop.resize((self.prop.frameSize[0] /1.4, self.prop.frameSize[1] /1.4))
-
         #Things happening on gamestart
         self.player = Player(self.window.screen, "biene-sprite-sheet", (100, 100))
         self.player.setPosition(90, 500)
@@ -28,6 +22,7 @@ class Game:
 
         self.running = True
         self.window.playMusic("bienensummen")
+        
 
         
     def handleInputs(self):
@@ -65,12 +60,20 @@ class Game:
             self.enemies.append(Enemy(self.window.screen, "varroa", (35, 50)))
             self.lastEnemySpawnTime = pygame.time.get_ticks()
 
+
+        # Collision detection
         for bullet in self.player.bullets:
             for enemy in self.enemies:
-                if getDistance(bullet.positionX, bullet.positionY, enemy.positionX, enemy.positionY) < bullet.frameSize[0] + enemy.frameSize[0]:
+                if getDistance(bullet.positionX, bullet.positionY, enemy.positionX, enemy.positionY) < bullet.frameSize[0] / 2 + enemy.frameSize[0] / 2:
                     bullet.addState(GameObject.State.REMOVE_OBJECT)
                     enemy.addState(GameObject.State.REMOVE_OBJECT)
                     self.window.playSound("enemy-hit")
+        
+        for enemy in self.enemies:
+            if getDistance(enemy.positionX, enemy.positionY, self.player.positionX, self.player.positionY) < enemy.frameSize[0] / 2 + self.player.frameSize[0] / 2:
+                self.window.playSound("player-hit")
+                self.running = False
+
 
         
         
@@ -78,8 +81,9 @@ class Game:
     def render(self):
         self.window.newFrame()
 
-        self.prop.render(False)               
-        self.player.render(True, 5)
+        #self.prop.render(False) 
+
+        self.player.render(True, 6)
 
         for enemy in self.enemies:
             enemy.render(False)

@@ -45,18 +45,22 @@ class GameObject:
     Parameters:
     -----------
     isAnimated: bool
-        Bool to specifie if object should be animated.
+        Bool to specify if object should be animated.
     maxFrames: int
         Total Frames to be drawn.
     frameSize: tuple[int, int]
         Size of a singular frame.
     """
+
     def render(self, isAnimated: bool = False, maxFrames: int = 0):
         # Drawing next frame of animated Object
         if isAnimated:
             # setting animated flag of object
             if not self.hasState(self.State.ANIMATED):
                 self.addState(self.State.ANIMATED)
+                self.currentFrame = 0
+
+            if not hasattr(self, "currentFrame"):
                 self.currentFrame = 0
 
             # calculating offset needed for current frame
@@ -68,7 +72,7 @@ class GameObject:
                             (frameOffset, 0, self.frameSize[0], self.frameSize[1]))
             
             # checking if we have to start over
-            if self.currentFrame < maxFrames:
+            if self.currentFrame < maxFrames - 1:
                 self.currentFrame += 1
             else: 
                 self.currentFrame = 0

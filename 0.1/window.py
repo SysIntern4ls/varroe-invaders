@@ -1,5 +1,9 @@
 import pygame
 
+'''
+Sounds sind bis jetzt nur lehre mp3 Dateien, die ich noch austausche
+'''
+
 class Window:
 
     def __init__(self, windowWidth, windowHeight):
