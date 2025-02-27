@@ -6,24 +6,35 @@ Sounds sind bis jetzt nur lehre mp3 Dateien, die ich noch austausche
 
 class Window:
 
-    def __init__(self, windowWidth, windowHeight):
-         self.windowWidth = windowWidth
-         self.windowHeight = windowHeight
-         
-         self.screen = pygame.display.set_mode((windowWidth, windowHeight))
-         pygame.display.set_caption("Invaders v0.1")
+    def __init__(self, renderWidth, renderHeight, windowWidth=2560, windowHeight=1440):
+        self.renderWidth = renderWidth
+        self.renderHeight = renderHeight
 
-         self.clock = pygame.time.Clock()
+        self.screen = pygame.display.set_mode((windowWidth, windowHeight))
+        pygame.display.set_caption("Invaders v0.1")
 
+        self.renderSurface = pygame.Surface((renderWidth, renderHeight))
 
+        self.clock = pygame.time.Clock()
 
+    def getMousePos(self):
+        currentWidth, currentHeight = self.screen.get_size()
+        
+        scaleX = currentWidth / self.renderWidth
+        scaleY = currentHeight / self.renderHeight
+
+        mouseX, mouseY = pygame.mouse.get_pos()
+        mouseX = int(mouseX / scaleX)
+        mouseY = int(mouseY / scaleY)
+        return mouseX, mouseY
          
     def newFrame(self):
         self.screen.fill((255,255,255))
-
+        self.renderSurface.fill((255,255,255))
             
-
     def endFrame(self):
+        scaledSurface = pygame.transform.smoothscale(self.renderSurface, (2560, 1440))
+        self.screen.blit(scaledSurface, (0, 0))
         pygame.display.flip()
 
     def close(self):
