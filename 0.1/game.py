@@ -45,6 +45,7 @@ class Game:
                 #TODO: Add pause menu
                 print("Escape")
 
+
     def update(self):
         self.player.update()
 
@@ -52,16 +53,21 @@ class Game:
         for enemy in self.enemies:
             enemy.update()
 
-        # Not realy the most efficient way to do this but looks way nicer and is easier to understand
-        self.enemies = [enemy for enemy in self.enemies if not enemy.hasState(GameObject.State.REMOVE_OBJECT)]
 
-        #TODO: Rework enemy spawning
+        # Remove Enemies that are marked for removal
+        # Backwards iteration to avoid index errors
+        for i in range(len(self.enemies) - 1, -1, -1):
+            if self.enemies[i].hasState(GameObject.State.REMOVE_OBJECT):
+                self.enemies.pop(i)
+                
+            
+
+        # Spawn new enemies
         if len(self.enemies) < 5 and pygame.time.get_ticks() - self.lastEnemySpawnTime >= 500:
             self.enemies.append(Enemy(self.window.screen, "varroa", (35, 50)))
             self.lastEnemySpawnTime = pygame.time.get_ticks()
 
-
-        # Collision detection
+        # Collision checking
         for bullet in self.player.bullets:
             for enemy in self.enemies:
                 if getDistance(bullet.positionX, bullet.positionY, enemy.positionX, enemy.positionY) < bullet.frameSize[0] / 2 + enemy.frameSize[0] / 2:
@@ -75,24 +81,27 @@ class Game:
                 self.running = False
 
 
-        
-        
 
     def render(self):
         self.window.newFrame()
-
-        #self.prop.render(False) 
 
         self.player.render(True, 6)
 
         for enemy in self.enemies:
             enemy.render(False)
 
+        if not self.running:
+            self.drawEndScreen()
+
         self.window.endFrame()
 
     def run(self):
-        while self.running:
+        while True:
             self.handleInputs()
             self.update()
             self.render()
             self.window.clock.tick(30)
+
+            if not self.running:
+                while True:
+                    pass

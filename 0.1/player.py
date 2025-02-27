@@ -4,11 +4,14 @@ from gameObject import GameObject
 from bullet     import Bullet
 
 class Player(GameObject):
-    def __init__(self, screen, image, frameSize):
+    def __init__(self, screen, image, frameSize, velocityX = 0, velocityY = 0):
         super().__init__(screen, image, frameSize)
         self.setPosition(0, 0, False)
-        self.setVelocity(0, 0)
+        self.setVelocity(velocityX, velocityY)
+
+        # Bullets
         self.bullets = []
+        self.lastBulletSpawnTime = 0
         
     def update(self):
         super().update()
@@ -16,7 +19,9 @@ class Player(GameObject):
         for bullet in self.bullets:
             bullet.update()
 
-        self.bullets = [bullet for bullet in self.bullets if not bullet.hasState(GameObject.State.REMOVE_OBJECT)]
+        for i in range(len(self.bullets) - 1, -1, -1):
+            if self.bullets[i].hasState(GameObject.State.REMOVE_OBJECT):
+                self.bullets.pop(i)
 
     def render(self, isAnimated = False, maxFrames = 0):
         super().render(isAnimated, maxFrames)
@@ -25,8 +30,6 @@ class Player(GameObject):
             bullet.render()
 
     def shoot(self):
-        if not hasattr(self, "lastBulletSpawnTime"):
-            self.lastBulletSpawnTime = 0
         if len(self.bullets) >= 3 or self.lastBulletSpawnTime + 500 >= pygame.time.get_ticks():
             return
         bullet = Bullet(self.screen, self.positionX + self.frameSize[0], self.positionY + self.frameSize[1] / 2)

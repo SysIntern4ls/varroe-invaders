@@ -1,10 +1,10 @@
 from gameObject import GameObject
 
 class Bullet(GameObject):
-    def __init__(self, screen, positionX, positionY):
+    def __init__(self, screen, positionX, positionY, velocityX = 10, velocityY = 0):
         super().__init__(screen, "honigtropfen", (10, 10))
         self.setPosition(positionX, positionY, False)
-        self.setVelocity(10, 0)
+        self.setVelocity(velocityX, velocityY)
 
     def update(self):
         super().update()
