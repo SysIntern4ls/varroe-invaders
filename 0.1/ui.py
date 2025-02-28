@@ -13,6 +13,9 @@ class UI:
         self.buttonWidth, self.buttonHeight = 250, 60
         self.buttonSpacing = 20
 
+        self.currResolution = 0
+        self.resolutions = [(1280, 720), (1920, 1080), (2560, 1440), (3840, 2160)]
+
         self.resumeCallback = resumeCallback
         self.restartCallback = restartCallback
         self.quitCallback = quitCallback
@@ -32,7 +35,6 @@ class UI:
         if gameOver:
             self._renderGameOverScreen()
             return
-
     
     def _renderHud(self, player_score, bullets_remaining, game_time):
         # Render Score
@@ -75,30 +77,82 @@ class UI:
         else:
             isHovered = False
 
-        buttonColor = tuple(x - 50 for x in color) if isHovered else color
+        buttonColor = tuple(max(0, x - 50) for x in color) if isHovered else color
 
         pygame.draw.rect(self.window.renderSurface, buttonColor, (position[0], position[1], size[0], size[1]), border_radius=15)
         text = font.render(text, True, (255, 255, 255))
         rect = text.get_rect(center=(position[0] + size[0] // 2, position[1] + size[1] // 2))
         self.window.renderSurface.blit(text, rect)
 
-        if not self.wasButtonClicked:
-            if isHovered and pygame.mouse.get_pressed()[0]:
+        if pygame.mouse.get_pressed()[0]:
+            if isHovered and not self.wasButtonClicked:
                 self.wasButtonClicked = True
                 return True
-        self.wasButtonClicked = False
+        else:
+            self.wasButtonClicked = False
         return False
 
     def _renderPauseMenu(self):
+        screenWidth, screenHeight = self.window.renderSurface.get_size()
+
         self.__renderBackgroundTransparent()
 
-        screenWidth, screenHeight = self.window.renderSurface.get_size()
+        # Resolution Buttons
+        arrowButtonSize = (40, 40)
+        arrowButtonColor = (255, 70, 70)
+
+        if self.currResolution > 0:
+            if self.__renderButton(arrowButtonColor,
+                                "<",
+                                (screenWidth // 2 - self.buttonWidth // 2, screenHeight // 2 - self.buttonHeight * 2 - self.buttonSpacing * 1.5),
+                                arrowButtonSize,
+                                self.font):
+                self.currResolution -= 1
+                self.window.updateWindow(self.resolutions[self.currResolution], False)
+
+        if self.__renderButton((100, 100, 100),
+                            str(self.resolutions[self.currResolution][0]) + " x " + str(self.resolutions[self.currResolution][1]),
+                            (screenWidth // 2 - self.buttonWidth // 2 + arrowButtonSize[0] + self.buttonSpacing // 2, screenHeight // 2 - self.buttonHeight * 2 - self.buttonSpacing * 1.5),
+                            (self.buttonWidth - 2 * arrowButtonSize[0] - self.buttonSpacing, arrowButtonSize[1]),
+                            self.font):
+            pass
+        
+        if self.currResolution < len(self.resolutions) - 1:
+            if self.__renderButton(arrowButtonColor,
+                                ">",
+                                (screenWidth // 2 + self.buttonWidth // 2 - arrowButtonSize[0], screenHeight // 2 - self.buttonHeight * 2 - self.buttonSpacing * 1.5),
+                                arrowButtonSize,
+                                self.font):
+                self.currResolution += 1
+                self.window.updateWindow(self.resolutions[self.currResolution], False)
+
+        # Fullscreen Button
+        if self.__renderButton((100, 100, 100),
+                            "Toggle Fullscreen",
+                            (screenWidth // 2 - self.buttonWidth // 2, screenHeight // 2 - self.buttonHeight - self.buttonSpacing * 2),
+                            (self.buttonWidth, self.buttonHeight), 
+                            self.font):
+            self.window.updateWindow(self.resolutions[self.currResolution], True)
+
+
+        # Resume Button
         if self.__renderButton((255, 70, 70),
                             "Resume",
                             (screenWidth // 2 - self.buttonWidth // 2, screenHeight // 2 - self.buttonHeight // 2), 
                             (self.buttonWidth, self.buttonHeight), 
                             self.font):
             self.resumeCallback()
+
+        # Quit Button
+        if self.__renderButton((100, 100, 100), 
+                            "Quit", 
+                            (screenWidth // 2 - self.buttonWidth // 2, screenHeight // 2 + self.buttonHeight // 2 + self.buttonSpacing // 2), 
+                            (self.buttonWidth, self.buttonHeight), 
+                            self.font):
+            self.quitCallback()
+
+
+        
 
     def _renderGameOverScreen(self):
         self.__renderBackgroundTransparent()
@@ -110,13 +164,15 @@ class UI:
         gameOverRect = gameOverText.get_rect(center=(screenWidth // 2, screenHeight // 2 - 100))
         self.window.renderSurface.blit(gameOverText, gameOverRect)
         
-        # Render Buttons
+        # Restart Button
         if self.__renderButton((255, 70, 70),
                             "Restart", 
                             (screenWidth // 2 - self.buttonWidth // 2, screenHeight // 2 - self.buttonHeight // 2), 
                             (self.buttonWidth, self.buttonHeight), 
                             self.font):
             self.restartCallback()
+
+        # Quit Button
         if self.__renderButton((100, 100, 100), 
                             "Quit", 
                             (screenWidth // 2 - self.buttonWidth // 2, screenHeight // 2 + self.buttonHeight // 2 + self.buttonSpacing), 

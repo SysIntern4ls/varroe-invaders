@@ -39,6 +39,7 @@ class Game:
 
     def restart(self):
         self.__init__()
+        pygame.init()
 
     def quit(self):
         self.running = False

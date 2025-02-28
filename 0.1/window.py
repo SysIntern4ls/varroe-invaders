@@ -33,7 +33,7 @@ class Window:
         self.renderSurface.fill((255,255,255))
             
     def endFrame(self):
-        scaledSurface = pygame.transform.smoothscale(self.renderSurface, (2560, 1440))
+        scaledSurface = pygame.transform.smoothscale(self.renderSurface, self.screen.get_size())
         self.screen.blit(scaledSurface, (0, 0))
         pygame.display.flip()
 
@@ -48,6 +48,18 @@ class Window:
         pygame.mixer.music.load("0.1\\sounds\\" + music + ".mp3")
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(volume)
+
+    def isFullscreen(self):
+        return bool(pygame.display.get_surface().get_flags() & pygame.FULLSCREEN)
+    
+    def updateWindow(self, resolution: tuple[int, int], toggleFullscreen: bool):
+        if toggleFullscreen:
+            if self.isFullscreen():
+                self.screen = pygame.display.set_mode(resolution, False) # Resets other flags as well but since there are no others in use its fine
+            else:
+                self.screen = pygame.display.set_mode(resolution, pygame.FULLSCREEN)
+        else: 
+            self.screen = pygame.display.set_mode(resolution)
         
 
 
