@@ -2,9 +2,13 @@ import pygame
 import pygame.freetype
 
 from window import Window
+from saveManager import SaveManager
 
 class UI:
-    def __init__(self, window: Window, resumeCallback, restartCallback, quitCallback):
+    def __init__(self, window: Window, saveManager : SaveManager, resumeCallback, restartCallback, quitCallback):
+        self.saveManager = saveManager
+        self.saveManager.load("gameData")
+
         self.window = window
         self.font = pygame.font.Font("0.1\\fonts\\Roboto_Condensed-Regular.ttf", 24)
         self.largeFont = pygame.font.Font("0.1\\fonts\\Roboto_Condensed-Regular.ttf", 50)
@@ -13,7 +17,7 @@ class UI:
         self.buttonWidth, self.buttonHeight = 250, 60
         self.buttonSpacing = 20
 
-        self.currResolution = 0
+        self.currResolution = 0 if self.saveManager.saveData.get("currentResolution") == None else int(self.saveManager.saveData.get("currentResolution"))
         self.resolutions = [(1280, 720), (1920, 1080), (2560, 1440), (3840, 2160)]
 
         self.resumeCallback = resumeCallback
@@ -36,17 +40,17 @@ class UI:
             self._renderGameOverScreen()
             return
     
-    def _renderHud(self, player_score, bullets_remaining, game_time):
+    def _renderHud(self, playerScore, bulletsRemaining, gameTime):
         # Render Score
-        score_text = self.font.render(f"Score: {player_score}", True, (0, 0, 0))
+        score_text = self.font.render(f"Score: {playerScore}", True, (0, 0, 0))
         self.window.renderSurface.blit(score_text, (10, 10))
 
         # Render Bullets
-        bullets_text = self.font.render(f"Bullets: {bullets_remaining}", True, (0, 0, 0))
+        bullets_text = self.font.render(f"Bullets: {bulletsRemaining}", True, (0, 0, 0))
         self.window.renderSurface.blit(bullets_text, (10, 40))
 
         # Render Time
-        time_text = self.font.render(f"Time: {game_time//1000}", True, (0, 0, 0))
+        time_text = self.font.render(f"Time: {gameTime//1000}", True, (0, 0, 0))
         self.window.renderSurface.blit(time_text, (10, 70))
 
     def __renderBackgroundTransparent(self):
@@ -97,6 +101,11 @@ class UI:
 
         self.__renderBackgroundTransparent()
 
+        # Render highest Score
+        playerHighScore = 0 if self.saveManager.saveData.get("playerHighScore") == None else int(self.saveManager.saveData.get("playerHighScore"))
+        score_text = self.font.render(f"Highest achieved score: {playerHighScore}", True, (0, 0, 0))
+        self.window.renderSurface.blit(score_text, (10, 10))
+
         # Resolution Buttons
         arrowButtonSize = (40, 40)
         arrowButtonColor = (255, 70, 70)
@@ -109,6 +118,7 @@ class UI:
                                 self.font):
                 self.currResolution -= 1
                 self.window.updateWindow(self.resolutions[self.currResolution], False)
+                self.saveManager.saveData["resolution"] = self.currResolution
 
         if self.__renderButton((100, 100, 100),
                             str(self.resolutions[self.currResolution][0]) + " x " + str(self.resolutions[self.currResolution][1]),
@@ -125,6 +135,7 @@ class UI:
                                 self.font):
                 self.currResolution += 1
                 self.window.updateWindow(self.resolutions[self.currResolution], False)
+                self.saveManager.saveData["resolution"] = self.currResolution
 
         # Fullscreen Button
         if self.__renderButton((100, 100, 100),

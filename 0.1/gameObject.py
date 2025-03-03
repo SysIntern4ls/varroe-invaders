@@ -5,8 +5,9 @@ from gameMath import clamp
 class GameObject:
 
     class State:
-        REMOVE_OBJECT = 1 << 0
+        OFFSCREEN = 1 << 0
         ANIMATED = 1 << 1
+        WASHIT = 1 << 2
 
     """
     Object state system using bitmasks

@@ -24,5 +24,5 @@ class Enemy(GameObject):
             self.setVelocity(self.velocityX, -self.velocityY)
         
         if self.positionX == -self.frameSize[0]:
-            self.addState(self.State.REMOVE_OBJECT)
+            self.addState(self.State.OFFSCREEN)
         

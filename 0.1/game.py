@@ -1,12 +1,14 @@
 import pygame
 import random
 
-from window     import Window
-from gameObject import GameObject
-from enemy      import Enemy
-from player     import Player
-from gameMath   import getDistance
-from ui         import UI
+from window         import Window
+from gameObject     import GameObject
+from enemy          import Enemy
+from player         import Player
+from gameMath       import getDistance
+from ui             import UI
+from saveManager    import SaveManager
+from bullet         import Bullet
 
 
 class Game:
@@ -24,7 +26,12 @@ class Game:
         self.running = True
         self.paused = False
         self.gameOver = False
-        self.ui = UI(self.window, self.resume, self.restart, self.quit)
+        self.isSaved = False
+
+        self.saveManager = SaveManager("game")
+
+        self.playerScore = 0
+        self.ui = UI(self.window, self.saveManager, self.resume, self.restart, self.quit)
 
         self.window.playMusic("bienensummen")
         
@@ -38,28 +45,35 @@ class Game:
                 self.godMode = True
 
     def restart(self):
+        self.saveManager.save("gameData")
+        self.isSaved = False
         self.__init__()
         pygame.init()
 
     def quit(self):
+        self.saveManager.save("gameData")
         self.running = False
+        self.window.close()
+        exit()
 
         
     def handleInputs(self):
         #Checking for keypresses
         keys = pygame.key.get_pressed()
         if keys[pygame.K_DOWN]:
-            self.player.move(0, 10)
+            if not (self.gameOver or self.paused):
+                self.player.move(0, 10)
         if keys[pygame.K_UP]:
-            self.player.move(0, -10)
+            if not (self.gameOver or self.paused):
+                self.player.move(0, -10)
         if keys[pygame.K_SPACE]:
-            self.player.shoot()
+            if not (self.gameOver or self.paused):
+                self.player.shoot()
 
         # Checking if we want to quit the game
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.running = False
-                self.window.close()
+                self.quit()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -67,7 +81,12 @@ class Game:
 
 
     def update(self):
-        if self.paused or self.gameOver:
+
+        if self.gameOver or self.paused:
+            if not self.isSaved:
+                self.saveManager.saveData["playerHighScore"] = max(int(self.saveManager.saveData.get("playerHighScore", "0")), self.playerScore)
+                self.saveManager.save("gameData")
+                self.isSaved = True
             return
         
         self.player.update()
@@ -76,11 +95,15 @@ class Game:
         for enemy in self.enemies:
             enemy.update()
 
+        # add score for every frame
+        self.playerScore += 1
 
         # Remove Enemies that are marked for removal
         # Backwards iteration to avoid index errors
         for i in range(len(self.enemies) - 1, -1, -1):
-            if self.enemies[i].hasState(GameObject.State.REMOVE_OBJECT):
+            if self.enemies[i].hasState(Enemy.State.OFFSCREEN) or self.enemies[i].hasState(Enemy.State.WASHIT):
+                if self.enemies[i].hasState(Enemy.State.OFFSCREEN):
+                    self.playerScore -= 50
                 self.enemies.pop(i)
 
         # Spawn new enemies
@@ -92,9 +115,10 @@ class Game:
         for bullet in self.player.bullets:
             for enemy in self.enemies:
                 if getDistance(bullet.positionX, bullet.positionY, enemy.positionX, enemy.positionY) < bullet.frameSize[0] / 2 + enemy.frameSize[0] / 2:
-                    bullet.addState(GameObject.State.REMOVE_OBJECT)
-                    enemy.addState(GameObject.State.REMOVE_OBJECT)
+                    bullet.addState(Bullet.State.WASHIT)
+                    enemy.addState(Enemy.State.WASHIT)
                     self.window.playSound("enemy-hit")
+                    self.playerScore += 150
         
         # Checking for collisions between enemies and player
         for enemy in self.enemies:
@@ -114,7 +138,7 @@ class Game:
             enemy.render(False)
 
         self.ui.render(
-            playerScore = 100,
+            playerScore = self.playerScore,
             bulletsRemaining = len(self.player.bullets),
             gameTime = pygame.time.get_ticks(),
             paused = self.paused,
@@ -126,14 +150,13 @@ class Game:
     def run(self):
         while True:
             self.handleInputs()
-            
-            if not self.paused and not self.gameOver:
-                self.update()
+
+            self.update()
 
             self.render()
 
             self.window.clock.tick(30)
 
             if not self.running:
-                while True:
-                    pass
+                self.quit()
+                break

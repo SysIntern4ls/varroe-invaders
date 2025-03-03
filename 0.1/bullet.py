@@ -10,4 +10,4 @@ class Bullet(GameObject):
         super().update()
         # Remove bullet if it goes off-screen
         if self.positionX >= self.screen.get_size()[0] - self.frameSize[0]:
-            self.addState(self.State.REMOVE_OBJECT)
+            self.addState(self.State.OFFSCREEN)

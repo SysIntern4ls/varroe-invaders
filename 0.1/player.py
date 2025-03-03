@@ -20,7 +20,7 @@ class Player(GameObject):
             bullet.update()
 
         for i in range(len(self.bullets) - 1, -1, -1):
-            if self.bullets[i].hasState(GameObject.State.REMOVE_OBJECT):
+            if self.bullets[i].hasState(GameObject.State.OFFSCREEN):
                 self.bullets.pop(i)
 
     def render(self, isAnimated = False, maxFrames = 0):
