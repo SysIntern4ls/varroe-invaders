@@ -24,6 +24,7 @@ class Game:
 
         self.enemies = [Enemy(self.window.renderSurface, "varroa", (35, 50))]
         self.lastEnemySpawnTime = 0
+        self.maxEnemieCount = 5
 
         self.running = True
         self.paused = False
@@ -42,7 +43,7 @@ class Game:
     def resume(self):
         self.paused = False
 
-        # if you are bad at the game but still want to be the best
+        # cheats
         if self.gameOver:
             if pygame.mouse.get_pressed()[1] or hasattr(self, "godMode"):
                 self.gameOver = False
@@ -85,7 +86,7 @@ class Game:
 
 
     def update(self):
-
+        # Stop updating if the game is over or paused
         if self.gameOver or self.paused:
             if not self.isSaved:
                 self.saveManager.saveData["playerHighScore"] = max(int(self.saveManager.saveData.get("playerHighScore", "0")), self.playerScore)
@@ -93,14 +94,19 @@ class Game:
                 self.isSaved = True
             return
 
+        # Update opjects
         self.player.update()
 
         # Update all enemies
         for enemy in self.enemies:
             enemy.update()
 
-        # add score for every frame
+        # add score for every frame that the player survives
         self.playerScore += 1
+
+        # change amount of total enemies based on score
+        self.maxEnemieCount = 5 + self.playerScore // 1000 
+        self.bulletCount = 4 + self.playerScore // 1000
 
         # Remove Enemies that are marked for removal
         # Backwards iteration to avoid index errors
@@ -111,7 +117,7 @@ class Game:
                 self.enemies.pop(i)
 
         # Spawn new enemies
-        if len(self.enemies) < 5 and pygame.time.get_ticks() - self.lastEnemySpawnTime >= 500:
+        if len(self.enemies) < self.maxEnemieCount and pygame.time.get_ticks() - self.lastEnemySpawnTime >= 500:
             self.enemies.append(Enemy(self.window.renderSurface, "varroa", (35, 50)))
             self.lastEnemySpawnTime = pygame.time.get_ticks()
 
