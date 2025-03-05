@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <game>
-  <gameData name="playerHighScore">3510</gameData>
+  <gameData name="playerHighScore">7235</gameData>
   <gameData name="resolution">2</gameData>
   <gameData name="fullscreen">0</gameData>
+  <gameData name="showCollisions">0</gameData>
 </game>

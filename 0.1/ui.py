@@ -41,6 +41,9 @@ class UI:
             return
     
     def __renderBackgroundTransparent(self):
+        if self.saveManager.saveData.get("showCollisions", 0):
+            return
+
         screenWidth, screenHeight = self.window.renderSurface.get_size()
 
         # Create a blurred background using multiple scaled smooth surfaces for better quality

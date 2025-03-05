@@ -22,7 +22,7 @@ spielaktiv = True
 
 '''Biene Init'''
 
-spieler = pygame.image.load("bilder/biene-sprite-sheet.png")
+spieler = pygame.image.load("0.1/bilder/biene-sprite-sheet.png")
 bereich = ['','','','','','']
 bereich[0] = (0,0,100,100)
 bereich[1] = (101,0,100,100)
@@ -47,7 +47,7 @@ gegnerbewegung = []
 anzahlgegner = 5
 
 for x in range(anzahlgegner):
-    gegnerBild.append(pygame.image.load("bilder/varroa.png"))
+    gegnerBild.append(pygame.image.load("0.1/bilder/varroa.png"))
     gegnerX.append(random.randint(int(W/2), int(W-50)))
     gegnerY.append(random.randint(50, int(H-50)))
     gegnerbewegung.append(5)
@@ -57,7 +57,7 @@ for x in range(anzahlgegner):
 '''Kugel Init'''
 
 # Kugel
-kugelBild = pygame.image.load("bilder/honigtropfen.png")
+kugelBild = pygame.image.load("0.1/bilder/honigtropfen.png")
 kugelX = 0
 kugelY = 0
 kugelXbewegung = 12
@@ -77,7 +77,7 @@ clock = pygame.time.Clock()
 font = pygame.font.Font(None, 36)
 
 # Musik/Soundeffekte einrichten
-pygame.mixer.music.load('sounds/bienensummen.mp3')
+pygame.mixer.music.load('0.1/sounds/bienensummen.mp3')
 pygame.mixer.music.play(-1,0.0)
 pygame.mixer.music.set_volume(.4)
 
@@ -181,6 +181,7 @@ while spielaktiv:
 
         i = 0
         while i < len(gegnerBild):
+
             if kollisionskontrolle(kugelX-30,kugelY-25,gegnerX[i], gegnerY[i]) == True:
                 # Kugel hat getroffen
                 siegpunkte += 1
@@ -191,6 +192,7 @@ while spielaktiv:
                 del gegnerX[i]
                 del gegnerY[i]
                 del gegnerbewegung[i]
+
             else:
                 i += 1
 
@@ -235,6 +237,11 @@ while spielaktiv:
 
     fenster.blit(spieler, (100, spielerposY), bereich[spielerAnimFrame])  
 
+    # draw collision circle
+    pygame.draw.circle(fenster, SCHWARZ, (kugelX + 30 // 2, kugelY + 25 // 2), 12.5, 2)
+    for x in range(len(gegnerBild)):
+        pygame.draw.circle(fenster, SCHWARZ, (gegnerX[x], gegnerY[x]), 12.5, 2)
+
     if kugelstatus == True:
         kugelfliegt(kugelX,kugelY)
 
@@ -243,6 +250,6 @@ while spielaktiv:
 
     # Fenster aktualisieren
     pygame.display.flip()
-    clock.tick(FPS)
+    clock.tick(5)
 
     '''Spiel Spielfeld/figuren zeichnen'''

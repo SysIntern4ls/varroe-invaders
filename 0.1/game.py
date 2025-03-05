@@ -99,18 +99,18 @@ class Game:
 
         # Update all enemies
         for enemy in self.enemies:
-            enemy.update()
+            enemy.update(self.playerScore)
 
         # add score for every frame that the player survives
         self.playerScore += 1
 
         # change amount of total enemies based on score
         self.maxEnemieCount = 5 + self.playerScore // 1000 
-        self.bulletCount = 4 + self.playerScore // 1000
+        self.player.maxBullets = 3 + self.playerScore // 10000
 
-        # Remove Enemies that are marked for removal
         # Backwards iteration to avoid index errors
         for i in range(len(self.enemies) - 1, -1, -1):
+            # Remove Enemies that are marked for removal
             if self.enemies[i].hasState(Enemy.State.OFFSCREEN) or self.enemies[i].hasState(Enemy.State.WASHIT):
                 if self.enemies[i].hasState(Enemy.State.OFFSCREEN):
                     self.playerScore -= 50
@@ -124,6 +124,8 @@ class Game:
         # Checking for collisions between enemies and bullets
         for bullet in self.player.bullets:
             for enemy in self.enemies:
+                pygame.draw.rect(self.window.renderSurface, (0, 0, 0), (bullet.positionX, bullet.positionY, 100, 100), 1)
+
                 if pygame.sprite.collide_mask(bullet, enemy):
                     bullet.addState(Bullet.State.WASHIT)
                     enemy.addState(Enemy.State.WASHIT)
@@ -137,7 +139,6 @@ class Game:
                 if hasattr(self, "godMode"):
                     return
                 self.gameOver = True
-
 
     def render(self):
         self.window.newFrame()
@@ -154,6 +155,18 @@ class Game:
             paused = self.paused,
             gameOver = self.gameOver
         )
+
+        if self.saveManager.saveData.get("showCollisions", 0):
+            for bullet in self.player.bullets:
+                for x in range(bullet.mask.get_size()[0]):
+                    for y in range(bullet.mask.get_size()[1]):
+                        if bullet.mask.get_at((x, y)):  # If the mask is "solid" at this point
+                            self.window.renderSurface.set_at((int(x + bullet.positionX), int(y + bullet.positionY)), (0,255,0))  # Set pixel to mask color
+            for enemy in self.enemies:
+                    for x in range(enemy.mask.get_size()[0]):
+                        for y in range(enemy.mask.get_size()[1]):
+                            if enemy.mask.get_at((x, y)):  # If the mask is "solid" at this point
+                                self.window.renderSurface.set_at((int(x + enemy.positionX), int(y + enemy.positionY)), (0,255,0))  # Set pixel to mask color
 
         self.window.endFrame()
 
