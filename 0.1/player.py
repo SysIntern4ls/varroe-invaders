@@ -12,6 +12,7 @@ class Player(GameObject):
         # Bullets
         self.bullets = []
         self.lastBulletSpawnTime = 0
+        self.maxBullets = 3
         
     def update(self):
         super().update()
@@ -30,7 +31,7 @@ class Player(GameObject):
             bullet.render()
 
     def shoot(self):
-        if len(self.bullets) >= 3 or self.lastBulletSpawnTime + 500 >= pygame.time.get_ticks():
+        if len(self.bullets) >= self.maxBullets or self.lastBulletSpawnTime + 500 >= pygame.time.get_ticks():
             return
         bullet = Bullet(self.screen, self.positionX + self.frameSize[0], self.positionY + self.frameSize[1] / 2)
         self.bullets.append(bullet)

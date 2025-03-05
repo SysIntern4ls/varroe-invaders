@@ -5,7 +5,6 @@ from window         import Window
 from gameObject     import GameObject
 from enemy          import Enemy
 from player         import Player
-from gameMath       import getDistance
 from ui             import UI
 from saveManager    import SaveManager
 from bullet         import Bullet
@@ -13,7 +12,10 @@ from bullet         import Bullet
 
 class Game:
     def __init__(self):
+        self.saveManager = SaveManager("game")
+
         #Initialising pygame
+        self.saveManager.load("gameData")
         self.window = Window(1280, 720)
 
         #Things happening on gamestart
@@ -28,10 +30,12 @@ class Game:
         self.gameOver = False
         self.isSaved = False
 
-        self.saveManager = SaveManager("game")
-
         self.playerScore = 0
         self.ui = UI(self.window, self.saveManager, self.resume, self.restart, self.quit)
+
+        windowWidth, windowHeight = self.ui.resolutions[int(self.saveManager.saveData.get("resolution", 0))]
+        self.window.updateWindow((windowWidth, windowHeight), int(self.saveManager.saveData.get("fullscreen", False)))
+        self.gameStartTime = pygame.time.get_ticks()
 
         self.window.playMusic("bienensummen")
         
@@ -48,7 +52,7 @@ class Game:
         self.saveManager.save("gameData")
         self.isSaved = False
         self.__init__()
-        pygame.init()
+        self.gameStartTime = pygame.time.get_ticks()
 
     def quit(self):
         self.saveManager.save("gameData")
@@ -88,7 +92,7 @@ class Game:
                 self.saveManager.save("gameData")
                 self.isSaved = True
             return
-        
+
         self.player.update()
 
         # Update all enemies
@@ -114,7 +118,7 @@ class Game:
         # Checking for collisions between enemies and bullets
         for bullet in self.player.bullets:
             for enemy in self.enemies:
-                if getDistance(bullet.positionX, bullet.positionY, enemy.positionX, enemy.positionY) < bullet.frameSize[0] / 2 + enemy.frameSize[0] / 2:
+                if pygame.sprite.collide_mask(bullet, enemy):
                     bullet.addState(Bullet.State.WASHIT)
                     enemy.addState(Enemy.State.WASHIT)
                     self.window.playSound("enemy-hit")
@@ -122,7 +126,7 @@ class Game:
         
         # Checking for collisions between enemies and player
         for enemy in self.enemies:
-            if getDistance(enemy.positionX, enemy.positionY, self.player.positionX, self.player.positionY) < enemy.frameSize[0] / 2 + self.player.frameSize[0] / 2:
+            if pygame.sprite.collide_mask(self.player, enemy):
                 self.window.playSound("player-hit")
                 if hasattr(self, "godMode"):
                     return
@@ -139,8 +143,8 @@ class Game:
 
         self.ui.render(
             playerScore = self.playerScore,
-            bulletsRemaining = len(self.player.bullets),
-            gameTime = pygame.time.get_ticks(),
+            bulletsRemaining = self.player.maxBullets - len(self.player.bullets),
+            gameTime = pygame.time.get_ticks() - self.gameStartTime,
             paused = self.paused,
             gameOver = self.gameOver
         )

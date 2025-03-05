@@ -30,9 +30,11 @@ class GameObject:
         self.screen = screen
         self.image = pygame.image.load("0.1\\" + imagePath + imageName + imageFormat)
         
+        self.mask = pygame.mask.from_surface(self.image)
 
         #ObjectProperties
         self.currentState = int(0)
+        self.rect = self.image.get_rect(topleft=(0, 0))
         self.setPosition(0,0)
         self.setVelocity(0,0)
 
@@ -65,12 +67,14 @@ class GameObject:
                 self.currentFrame = 0
 
             # calculating offset needed for current frame
-            frameOffset = self.currentFrame * (self.frameSize[0] + 1)
+            frameOffset = self.currentFrame * (self.frameSize[0])
 
             # drawing current frame
             self.screen.blit(self.image,
                             (self.positionX, self.positionY),
                             (frameOffset, 0, self.frameSize[0], self.frameSize[1]))
+            
+            self.mask = pygame.mask.from_surface(self.image.subsurface((frameOffset, 0, self.frameSize[0], self.frameSize[1])))
             
             # checking if we have to start over
             if self.currentFrame < maxFrames - 1:
@@ -112,6 +116,8 @@ class GameObject:
             self.positionX += x
             self.positionY += y
 
+        self.rect.topleft = (self.positionX, self.positionY)
+
 
     """
     Teleports GameObject to X and Y coordinates
@@ -132,6 +138,8 @@ class GameObject:
         else:
             self.positionX = x
             self.positionY = y
+
+        self.rect.topleft = (self.positionX, self.positionY)
 
     def setVelocity(self, x = 0, y = 0):
         self.velocityX = x

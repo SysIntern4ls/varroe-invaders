@@ -17,7 +17,7 @@ class UI:
         self.buttonWidth, self.buttonHeight = 250, 60
         self.buttonSpacing = 20
 
-        self.currResolution = 0 if self.saveManager.saveData.get("currentResolution") == None else int(self.saveManager.saveData.get("currentResolution"))
+        self.currResolution = 0 if self.saveManager.saveData.get("resolution") == None else int(self.saveManager.saveData.get("resolution"))
         self.resolutions = [(1280, 720), (1920, 1080), (2560, 1440), (3840, 2160)]
 
         self.resumeCallback = resumeCallback
@@ -40,21 +40,7 @@ class UI:
             self._renderGameOverScreen()
             return
     
-    def _renderHud(self, playerScore, bulletsRemaining, gameTime):
-        # Render Score
-        score_text = self.font.render(f"Score: {playerScore}", True, (0, 0, 0))
-        self.window.renderSurface.blit(score_text, (10, 10))
-
-        # Render Bullets
-        bullets_text = self.font.render(f"Bullets: {bulletsRemaining}", True, (0, 0, 0))
-        self.window.renderSurface.blit(bullets_text, (10, 40))
-
-        # Render Time
-        time_text = self.font.render(f"Time: {gameTime//1000}", True, (0, 0, 0))
-        self.window.renderSurface.blit(time_text, (10, 70))
-
     def __renderBackgroundTransparent(self):
-        # Get screen dimensions
         screenWidth, screenHeight = self.window.renderSurface.get_size()
 
         # Create a blurred background using multiple scaled smooth surfaces for better quality
@@ -67,11 +53,24 @@ class UI:
 
         # Create a semi-transparent overlay to darken the background
         overlay = pygame.Surface((screenWidth, screenHeight), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))  # Dark overlay for better contrast (alpha=180)
+        overlay.fill((0, 0, 0, 180))  # Dark overlay for better contrast
 
         # Draw the blurred background and overlay
         self.window.renderSurface.blit(screenCopy, (0, 0))
         self.window.renderSurface.blit(overlay, (0, 0))
+
+    def _renderHud(self, playerScore, bulletsRemaining, gameTime):
+        # Render Score
+        score_text = self.font.render(f"Score: {playerScore}", True, (0, 0, 0))
+        self.window.renderSurface.blit(score_text, (10, 10))
+
+        # Render Bullets
+        bullets_text = self.font.render(f"Bullets: {bulletsRemaining}", True, (0, 0, 0))
+        self.window.renderSurface.blit(bullets_text, (10, 40))
+
+        # Render Time
+        time_text = self.font.render(f"Time: {gameTime//1000}", True, (0, 0, 0))
+        self.window.renderSurface.blit(time_text, (10, 70))
 
     def __renderButton(self, color: tuple[int, int, int], text: str, position: tuple[int, int], size: tuple[int, int], font: pygame.freetype.Font):
         mouseX, mouseY = self.window.getMousePos()
@@ -144,6 +143,7 @@ class UI:
                             (self.buttonWidth, self.buttonHeight), 
                             self.font):
             self.window.updateWindow(self.resolutions[self.currResolution], True)
+            self.saveManager.saveData["fullscreen"] = int(self.window.isFullscreen())
 
 
         # Resume Button
