@@ -41,7 +41,7 @@ class UI:
             return
     
     def __renderBackgroundTransparent(self):
-        if self.saveManager.saveData.get("showCollisions", 0):
+        if int(self.saveManager.saveData.get("showCollisions", 0)) == True:
             return
 
         screenWidth, screenHeight = self.window.renderSurface.get_size()

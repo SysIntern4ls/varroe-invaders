@@ -99,7 +99,7 @@ class Game:
 
         # Update all enemies
         for enemy in self.enemies:
-            enemy.update(self.playerScore)
+            enemy.update()
 
         # add score for every frame that the player survives
         self.playerScore += 1
@@ -156,7 +156,12 @@ class Game:
             gameOver = self.gameOver
         )
 
-        if self.saveManager.saveData.get("showCollisions", 0):
+        if int(self.saveManager.saveData.get("showCollisions", 0)) == True:
+            for x in range(self.player.mask.get_size()[0]):
+                    for y in range(self.player.mask.get_size()[1]):
+                        if self.player.mask.get_at((x, y)):  # If the mask is "solid" at this point
+                            self.window.renderSurface.set_at((int(x + self.player.positionX), int(y + self.player.positionY)), (0,255,0))  # Set pixel to mask color
+
             for bullet in self.player.bullets:
                 for x in range(bullet.mask.get_size()[0]):
                     for y in range(bullet.mask.get_size()[1]):

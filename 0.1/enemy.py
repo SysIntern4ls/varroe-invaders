@@ -11,15 +11,16 @@ class Enemy(GameObject):
         self.setVelocity(velocityX, velocityY)
         self.setPosition(self.screen.get_size()[0] + self.frameSize[0], random.randint(0, self.screen.get_size()[1]))
         
-    def move(self, x = 0, y = 0, restrictToScreen: bool = True):
+    def move(self, x = 0, y = 0):
         x = clamp(self.positionX + x, -self.frameSize[0], self.screen.get_size()[0] - self.frameSize[0])
         y = clamp(self.positionY + y, 0, self.screen.get_size()[1] - self.frameSize[1])
         self.setPosition(x, y, False)
 
-    def update(self, scoreCount):
+    def update(self):
         super().update()
 
         # Bounce off upper and lower screen borders
+        
         if self.positionY == 0 or self.positionY >= self.screen.get_size()[1] - self.frameSize[1]:
             self.setVelocity(self.velocityX, -self.velocityY)
         

@@ -22,7 +22,7 @@ spielaktiv = True
 
 '''Biene Init'''
 
-spieler = pygame.image.load("0.1/bilder/biene-sprite-sheet.png")
+spieler = pygame.image.load("0.1/bilder/biene-sprite-sheet_save.png")
 bereich = ['','','','','','']
 bereich[0] = (0,0,100,100)
 bereich[1] = (101,0,100,100)
@@ -250,6 +250,6 @@ while spielaktiv:
 
     # Fenster aktualisieren
     pygame.display.flip()
-    clock.tick(5)
+    clock.tick(FPS)
 
     '''Spiel Spielfeld/figuren zeichnen'''
