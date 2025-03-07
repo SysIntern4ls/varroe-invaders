@@ -41,14 +41,6 @@ class Window:
         pygame.quit()
         exit()
 
-    def playSound(self, sound):
-        pygame.mixer.Sound("0.1\\sounds\\" + sound + ".mp3").play()
-
-    def playMusic(self, music, volume: float = 0.5):
-        pygame.mixer.music.load("0.1\\sounds\\" + music + ".mp3")
-        pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(volume)
-
     def isFullscreen(self):
         return bool(pygame.display.get_surface().get_flags() & pygame.FULLSCREEN)
     
