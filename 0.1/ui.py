@@ -76,6 +76,7 @@ class UI:
         time_text = self.font.render(f"Time: {gameTime//1000}", True, (0, 0, 0))
         self.window.renderSurface.blit(time_text, (10, 70))
 
+
     def __renderButton(self, color: tuple[int, int, int], text: str, position: tuple[int, int], size: tuple[int, int], font: pygame.freetype.Font):
         mouseX, mouseY = self.window.getMousePos()
 
@@ -166,9 +167,6 @@ class UI:
                             self.font):
             self.quitCallback()
 
-
-        
-
     def _renderGameOverScreen(self):
         self.__renderBackgroundTransparent()
 
@@ -188,6 +186,7 @@ class UI:
             self.restartCallback()
 
         # Quit Button
+        
         if self.__renderButton((100, 100, 100), 
                             "Quit", 
                             (screenWidth // 2 - self.buttonWidth // 2, screenHeight // 2 + self.buttonHeight // 2 + self.buttonSpacing), 

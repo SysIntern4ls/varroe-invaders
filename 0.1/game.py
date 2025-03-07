@@ -111,7 +111,7 @@ class Game:
         # Backwards iteration to avoid index errors
         for i in range(len(self.enemies) - 1, -1, -1):
             # Remove Enemies that are marked for removal
-            if self.enemies[i].hasState(Enemy.State.OFFSCREEN) or self.enemies[i].hasState(Enemy.State.WASHIT):
+            if self.enemies[i].hasState(Enemy.State.OFFSCREEN) or self.enemies[i].hasState(Enemy.State.WAS_HIT):
                 if self.enemies[i].hasState(Enemy.State.OFFSCREEN):
                     self.playerScore -= 50
                 self.enemies.pop(i)
@@ -127,8 +127,8 @@ class Game:
         for bullet in self.player.bullets:
             for enemy in self.enemies:
                 if pygame.sprite.collide_mask(bullet, enemy):
-                    bullet.addState(Bullet.State.WASHIT)
-                    enemy.addState(Enemy.State.WASHIT)
+                    bullet.addState(Bullet.State.WAS_HIT)
+                    enemy.addState(Enemy.State.WAS_HIT)
                     self.window.playSound("enemy-hit")
                     self.playerScore += 150
         

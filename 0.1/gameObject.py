@@ -7,7 +7,7 @@ class GameObject:
     class State:
         OFFSCREEN = 1 << 0
         ANIMATED = 1 << 1
-        WASHIT = 1 << 2
+        WAS_HIT = 1 << 2
 
     """
     Object state system using bitmasks
