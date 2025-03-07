@@ -37,8 +37,6 @@ class Game:
         windowWidth, windowHeight = self.ui.resolutions[int(self.saveManager.saveData.get("resolution", 0))]
         self.window.updateWindow((windowWidth, windowHeight), int(self.saveManager.saveData.get("fullscreen", False)))
         self.gameStartTime = pygame.time.get_ticks()
-
-        self.window.playMusic("bienensummen")
         
     def resume(self):
         self.paused = False
@@ -129,13 +127,11 @@ class Game:
                 if pygame.sprite.collide_mask(bullet, enemy):
                     bullet.addState(Bullet.State.WAS_HIT)
                     enemy.addState(Enemy.State.WAS_HIT)
-                    self.window.playSound("enemy-hit")
                     self.playerScore += 150
         
         # Checking for collisions between enemies and player
         for enemy in self.enemies:
             if pygame.sprite.collide_mask(self.player, enemy):
-                self.window.playSound("player-hit")
                 if hasattr(self, "godMode"):
                     return
                 self.gameOver = True
