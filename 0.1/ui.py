@@ -41,6 +41,7 @@ class UI:
             return
     
     def __renderBackgroundTransparent(self):
+        #DEBUG: Dont make background transparent if collision dbg enabled for ez screenshots
         if int(self.saveManager.saveData.get("showCollisions", 0)) == True:
             return
 

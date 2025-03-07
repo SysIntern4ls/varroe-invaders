@@ -118,14 +118,14 @@ class Game:
 
         # Spawn new enemies
         if len(self.enemies) < self.maxEnemieCount and pygame.time.get_ticks() - self.lastEnemySpawnTime >= 500:
+
             self.enemies.append(Enemy(self.window.renderSurface, "varroa", (35, 50)))
+
             self.lastEnemySpawnTime = pygame.time.get_ticks()
 
         # Checking for collisions between enemies and bullets
         for bullet in self.player.bullets:
             for enemy in self.enemies:
-                pygame.draw.rect(self.window.renderSurface, (0, 0, 0), (bullet.positionX, bullet.positionY, 100, 100), 1)
-
                 if pygame.sprite.collide_mask(bullet, enemy):
                     bullet.addState(Bullet.State.WASHIT)
                     enemy.addState(Enemy.State.WASHIT)
@@ -156,22 +156,23 @@ class Game:
             gameOver = self.gameOver
         )
 
+        #DEBUG: Draw collision masks of player, bullets and enemies
         if int(self.saveManager.saveData.get("showCollisions", 0)) == True:
             for x in range(self.player.mask.get_size()[0]):
                     for y in range(self.player.mask.get_size()[1]):
-                        if self.player.mask.get_at((x, y)):  # If the mask is "solid" at this point
-                            self.window.renderSurface.set_at((int(x + self.player.positionX), int(y + self.player.positionY)), (0,255,0))  # Set pixel to mask color
+                        if self.player.mask.get_at((x, y)):
+                            self.window.renderSurface.set_at((int(x + self.player.positionX), int(y + self.player.positionY)), (0,255,0))
 
             for bullet in self.player.bullets:
                 for x in range(bullet.mask.get_size()[0]):
                     for y in range(bullet.mask.get_size()[1]):
-                        if bullet.mask.get_at((x, y)):  # If the mask is "solid" at this point
-                            self.window.renderSurface.set_at((int(x + bullet.positionX), int(y + bullet.positionY)), (0,255,0))  # Set pixel to mask color
+                        if bullet.mask.get_at((x, y)):
+                            self.window.renderSurface.set_at((int(x + bullet.positionX), int(y + bullet.positionY)), (0,255,0))
             for enemy in self.enemies:
                     for x in range(enemy.mask.get_size()[0]):
                         for y in range(enemy.mask.get_size()[1]):
-                            if enemy.mask.get_at((x, y)):  # If the mask is "solid" at this point
-                                self.window.renderSurface.set_at((int(x + enemy.positionX), int(y + enemy.positionY)), (0,255,0))  # Set pixel to mask color
+                            if enemy.mask.get_at((x, y)):
+                                self.window.renderSurface.set_at((int(x + enemy.positionX), int(y + enemy.positionY)), (0,255,0))
 
         self.window.endFrame()
 

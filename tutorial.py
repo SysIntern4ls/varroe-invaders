@@ -95,10 +95,11 @@ def kugelfliegt(x, y):
     fenster.blit(kugelBild, (x, y))
 
 # Funktion um Kollision zu überprüfen
-def kollisionskontrolle(kugelX, kugelY, gegnerX, gegnerY, size = 25):
+
+def kollisionskontrolle(kugelX, kugelY, gegnerX, gegnerY):
     abstand = int( math.sqrt(math.pow(kugelX - gegnerX,2) + math.pow(kugelY-gegnerY,2)) )
 
-    if abstand < size:
+    if abstand < 25:
         return True
     else:
         return False
@@ -237,10 +238,12 @@ while spielaktiv:
 
     fenster.blit(spieler, (100, spielerposY), bereich[spielerAnimFrame])  
 
+    ''' 
     # draw collision circle
     pygame.draw.circle(fenster, SCHWARZ, (kugelX + 30 // 2, kugelY + 25 // 2), 12.5, 2)
     for x in range(len(gegnerBild)):
         pygame.draw.circle(fenster, SCHWARZ, (gegnerX[x], gegnerY[x]), 12.5, 2)
+    '''
 
     if kugelstatus == True:
         kugelfliegt(kugelX,kugelY)

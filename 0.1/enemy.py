@@ -20,7 +20,6 @@ class Enemy(GameObject):
         super().update()
 
         # Bounce off upper and lower screen borders
-        
         if self.positionY == 0 or self.positionY >= self.screen.get_size()[1] - self.frameSize[1]:
             self.setVelocity(self.velocityX, -self.velocityY)
         
